@@ -3,26 +3,6 @@
 <head>
     </head>
 <body>
-    <div class="container">
-        <div class="content">
-            <h1>Search Assistant</h1>
-            <button onclick="startRecognition()">Start Listening</button>
-            <button onclick="stopRecognition()">Stop Listening</button>
-            <h2>Search History:</h2>
-            <ul id="search-history"></ul>
-        </div>
-        <div class="image-container">
-            <wcbg>wanna change wallpaper</wcbg>
-            <textarea id="image-url" placeholder="Paste image link"></textarea>
-        </div>
-    </div>
-
-    <script>
-        const textarea = document.getElementById('image-url');
-        textarea.addEventListener('input', () => {
-            const imageUrl = textarea.value;
-            document.body.style.backgroundImage = `url('${imageUrl}')`;
-        });
-    </script>
+   
 </body>
 </html>
