@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Assistant</title>
+
+    <style>
+        body {
+            margin: 2px 20px 20px 20px;
+            padding: 0;
+            background-image: url("https://wallpaperaccess.com/full/16092.jpg");
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: rgb(1, 18, 44);
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            background-size: cover;
+        }
+
+        h1, h2 {
+            color: white;
+        }
+
+        ul {
+            color: cyan;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            height: 100vh;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .image-container {
+            width: 250px;
+            margin-top: 20px;
+            background-color: white;
+            border-radius: 20px;
+            padding: 10px;
+            align-items: center;
+            text-align: center;
+        }
+
+        .image-container textarea {
+            width: 97%;
+            height: 100px;
+            text-align: center;
+            border-radius: 20px;
+            padding-top: 10px;
+            resize: none;
+            margin-right: 10px;
+            padding-right: -15px;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+
+    <script>
+
+
+        
+        const message = new SpeechSynthesisUtterance('Good morning sir ');//i m ultron.6 what do want from me to do
+        window.speechSynthesis.speak(message);
+
+        const srow = new SpeechSynthesisUtterance('I found this result on the web');
+        const okaysir = new SpeechSynthesisUtterance('Okay sir');
+
+        window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        var recognition = new SpeechRecognition();
+        var searchHistory = [];
+
+        recognition.continuous = true; // Enable continuous listening
+
+        recognition.onresult = function(event) {
+            var transcript = event.results[event.results.length - 1][0].transcript; // Get the latest transcript
+            processSpeech(transcript);
+        };
+
+        function processSpeech(transcript) {
+            searchHistory.push(transcript);
+
+            if (transcript.toLowerCase().includes("google.")) {
+                openInNewTab("https://www.google.com/search?q=" + encodeURIComponent(transcript.replace('Google.', '').trim()));
+                window.speechSynthesis.speak(srow);
+            } else if (transcript.toLowerCase().includes("wikipedia.")) {
+                openInNewTab("https://en.wikipedia.org/wiki/Special:Search?search=" + encodeURIComponent(transcript.replace('Wikipedia.', '').trim()));
+                window.speechSynthesis.speak(srow);
+            } else if (transcript.toLowerCase().includes("youtube.")) {
+                openInNewTab("https://www.youtube.com/results?search_query=" + encodeURIComponent(transcript.replace('YouTube.', '').trim()));
+                window.speechSynthesis.speak(srow);
+            } else if (transcript.toLowerCase().includes("search song ")) {
+                openInNewTab("https://music.youtube.com/search?q=" + encodeURIComponent(transcript.replace('Play Song ', '').trim()));
+                window.speechSynthesis.speak(srow);
+            } else if (transcript.toLowerCase().includes("close")) {
+                window.close();
+            } else if (transcript.toLowerCase().includes("exit")) {
+                window.close();
+            } else if (transcript.toLowerCase().includes("stop listening")) {
+                stopRecognition();
+                window.speechSynthesis.speak(okaysir);
+            } else if (transcript.toLowerCase().includes("what can you do")) {
+                const actions = new SpeechSynthesisUtterance('Until now, I can only search things on Google, Wikipedia, and YouTube in different tabs');
+                window.speechSynthesis.speak(actions);
+            } else if (transcript.toLowerCase().includes("news.")) {
+                openInNewTab("https://zeenews.india.com/live-tv");
+                window.speechSynthesis.speak(srow);
+            } else if (transcript.toLowerCase().includes("find ip address")) {
+                getIPAddress();
+            } else if (transcript.toLowerCase().includes("what is your name","what's your name")) {
+                const myname = new SpeechSynthesisUtterance('My name is Ultron.6');
+                window.speechSynthesis.speak(myname);
+            } else if (transcript.toLowerCase().includes("play a song")) {
+                openInNewTab("https://music.youtube.com/watch?v=vmqBYb0-KjQ");                
+            } else if (transcript.toLowerCase().includes("turn on lights")) {
+                sendCommand("on");
+                const litron = new SpeechSynthesisUtterance('lights are turning on');
+                window.speechSynthesis.speak(litron);
+            } else if (transcript.toLowerCase().includes("turn off lights")) {
+                sendCommand("off");
+                const litroff = new SpeechSynthesisUtterance('lights are turning on');
+                window.speechSynthesis.speak(litroff);
+            } else if (transcript.toLowerCase().includes("check network strength")) {
+                openInNewTab("https://fast.com/");                
+            } else if (
+                transcript.toLowerCase().includes("who is your creator") ||
+                transcript.toLowerCase().includes("who created you") ||
+                transcript.toLowerCase().includes("tell me about your creator")
+            ) {
+                const creators = [
+                    "My creator's name is money. He is a developer and designer.",
+                    "Oh, my creator! Money is the one who created me."
+                ];
+                const randomIndex = Math.floor(Math.random() * creators.length);
+                const creatorReply = new SpeechSynthesisUtterance(creators[randomIndex]);
+                window.speechSynthesis.speak(creatorReply);
+            } else if (
+                transcript.toLowerCase().includes("who is money") ||
+                transcript.toLowerCase().includes("money sharma.") 
+            ) {
+                const moneycrtr = [
+                    "Money he is my Dad means designer and developer. I don't have much knowledge about him",
+                    "Oh, my creator! Money is the one who created me. He is like a virus which develop itself with timeand experience."
+                ];
+                const randomIndex = Math.floor(Math.random() * moneycrtr.length);
+                const moneycrtrReply = new SpeechSynthesisUtterance(moneycrtr[randomIndex]);
+                window.speechSynthesis.speak(moneycrtrReply);
+            }
+        
+
+            showSearchHistory();
+        }
+
+        function openInNewTab(url) {
+            var win = window.open(url, "_blank");
+            win.focus();
+        }
+
+        function showSearchHistory() {
+            var searchHistoryContainer = document.getElementById("search-history");
+            searchHistoryContainer.innerHTML = "";
+
+            for (var i = 0; i < searchHistory.length; i++) {
+                var searchItem = document.createElement("li");
+                searchItem.textContent = searchHistory[i];
+                searchHistoryContainer.appendChild(searchItem);
+            }
+        }
+
+        function startRecognition() {
+            recognition.start();
+            console.log("Speech recognition started.");
+        }
+
+        function stopRecognition() {
+            recognition.stop();
+            console.log("Speech recognition stopped.");
+        }
+
+        function sendCommand(command) {
+            var xhr = new XMLHttpRequest();
+            var url = "http://192.168.43.138/control?command=" + command;
+
+            xhr.open("GET", url, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    console.log("Command sent: " + response.status);
+                }
+            };
+            xhr.send();
+        }
+
+        function getIPAddress() {
+            fetch("https://api.ipify.org/?format=json")
+                .then(response => response.json())
+                .then(data => {
+                    const ipAddress = data.ip;
+                    const ipAddressSpeech = new SpeechSynthesisUtterance('The IP address of the device is ' + ipAddress);
+                    window.speechSynthesis.speak(ipAddressSpeech);
+                })
+                .catch(error => {
+                    console.error("Failed to get IP address:", error);
+                });
+        }
+
+        window.onload = function() {
+            startRecognition();
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <h1>Search Assistant</h1>
+            <button onclick="startRecognition()">Start Listening</button>
+            <button onclick="stopRecognition()">Stop Listening</button>
+            <h2>Search History:</h2>
+            <ul id="search-history"></ul>
+        </div>
+        <div class="image-container">
+            <wcbg>wanna change wallpaper</wcbg>
+            <textarea id="image-url" placeholder="Paste image link"></textarea>
+        </div>
+    </div>
+
+    <script>
+        const textarea = document.getElementById('image-url');
+        textarea.addEventListener('input', () => {
+            const imageUrl = textarea.value;
+            document.body.style.backgroundImage = `url('${imageUrl}')`;
+        });
+    </script>
+</body>
+</html>
